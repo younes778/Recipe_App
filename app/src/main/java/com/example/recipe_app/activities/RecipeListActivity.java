@@ -11,6 +11,7 @@ import com.example.recipe_app.model.Recipe;
 import com.example.recipe_app.requests.RecipeApi;
 import com.example.recipe_app.requests.ServiceGenerator;
 import com.example.recipe_app.requests.responses.RecipeSearchResponse;
+import com.example.recipe_app.util.Testing;
 import com.example.recipe_app.util.Utils;
 import com.example.recipe_app.viewmodel.RecipeListViewModel;
 
@@ -45,42 +46,18 @@ public class RecipeListActivity extends BaseActivity {
         recipeListViewModel.getRecipes().observe(this, new Observer<List<Recipe>>() {
             @Override
             public void onChanged(@Nullable List<Recipe> recipes) {
-
+                if (recipes!=null)
+                    Testing.printRecipes(TAG,recipes);
             }
         });
     }
 
     private void testRecipeSearch(){
-        RecipeApi recipeApi = ServiceGenerator.getRecipeApi();
+        searchRecipeApi("chicken breast",1);
 
-        Call<RecipeSearchResponse> responseCall = recipeApi.searchRecipe(Utils.API_KEY_FOOD,
-                "Chicken",
-                "1");
+    }
 
-        responseCall.enqueue(new Callback<RecipeSearchResponse>() {
-            @Override
-            public void onResponse(Call<RecipeSearchResponse> call, Response<RecipeSearchResponse> response) {
-                Log.d(TAG, "onResponse: server response "+response.code());
-                if (response.code()==200){
-                    Log.d(TAG, "onResponse: "+response.body().toString());
-                    List<Recipe> recipes = response.body().getRecipes();
-                    for (Recipe recipe:recipes){
-                        Log.d(TAG, "onResponse: "+recipe.getTitle());
-                    }
-                } else {
-                    try {
-                        Log.d(TAG, "onResponse: "+response.body().toString());
-                    } catch (Exception e){
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<RecipeSearchResponse> call, Throwable t) {
-
-            }
-        });
-
+    private void searchRecipeApi(String query,int numPage) {
+        recipeListViewModel.searchRecipeApi(query,numPage);
     }
 }
