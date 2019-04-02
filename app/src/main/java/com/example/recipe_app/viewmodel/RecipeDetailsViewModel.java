@@ -29,4 +29,8 @@ public class RecipeDetailsViewModel extends ViewModel {
     public String getRecipeId() {
         return recipeId;
     }
+
+    public LiveData<Boolean> isRecipeRequestTimeOut(){
+        return recipeRepository.isRecipeRequestTimeOut();
+    }
 }

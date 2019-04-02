@@ -66,6 +66,15 @@ public class RecipeDetailsActivity extends BaseActivity {
                 }
             }
         });
+
+        recipeDetailsViewModel.isRecipeRequestTimeOut().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable Boolean aBoolean) {
+                if (aBoolean){
+                    displayErrorScreen(getString(R.string.error_recipe_message));
+                }
+            }
+        });
     }
 
     private void setRecipeProperties(Recipe recipe){
@@ -89,11 +98,36 @@ public class RecipeDetailsActivity extends BaseActivity {
                 ingredientsContainer.addView(textView);
             }
         }
-        showParemt();
+        showParent();
         showProgress(false);
     }
 
-    private void showParemt(){
+    private void showParent(){
         scrollView.setVisibility(View.VISIBLE);
+    }
+
+    private void displayErrorScreen(String errorMessage){
+        RequestOptions requestOptions = new RequestOptions()
+                .placeholder(R.drawable.ic_launcher_background);
+
+        Glide.with(getBaseContext())
+                .setDefaultRequestOptions(requestOptions)
+                .load(R.drawable.ic_launcher_background)
+                .into(imageView);
+
+        title.setText(getString(R.string.error_recipe_title));
+        rank.setText("");
+        ingredientsContainer.removeAllViews();
+        TextView textView = new TextView(this);
+        if (!errorMessage.equals(""))
+            textView.setText(errorMessage);
+        else
+            textView.setText(getString(R.string.error_recipe_message_default));
+        textView.setTextSize(15);
+        textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT));
+        ingredientsContainer.addView(textView);
+        showParent();
+        showProgress(false);
+
     }
 }

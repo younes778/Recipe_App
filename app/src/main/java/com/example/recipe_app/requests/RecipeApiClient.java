@@ -20,6 +20,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 import static com.example.recipe_app.util.Utils.NETWORK_TIMEOUT;
+import static com.example.recipe_app.util.Utils.RECIPE_GET_TIMEOUT;
 
 public class RecipeApiClient {
     private static final String TAG = "RecipeApiClient";
@@ -28,6 +29,7 @@ public class RecipeApiClient {
 
     private MutableLiveData<List<Recipe>> mRecipes;
     private MutableLiveData<Recipe> recipe;
+    private MutableLiveData<Boolean> recipeRequestTimeOut;
 
     private RetrieveRecipesRunnable retrieveRecipesRunnable;
     private RetrieveRecipeRunnable retrieveRecipeRunnable;
@@ -41,6 +43,7 @@ public class RecipeApiClient {
     private RecipeApiClient() {
         mRecipes = new MutableLiveData<>();
         recipe = new MutableLiveData<>();
+        recipeRequestTimeOut = new MutableLiveData<>();
     }
 
     public LiveData<List<Recipe>> getmRecipes() {
@@ -48,6 +51,9 @@ public class RecipeApiClient {
     }
     public LiveData<Recipe> getRecipe() {
         return recipe;
+    }
+    public LiveData<Boolean> isRecipeRequestTimeOut(){
+        return recipeRequestTimeOut;
     }
 
     public void searchRecipeApi(String query, int pageNumber) {
@@ -60,7 +66,6 @@ public class RecipeApiClient {
         AppExecutors.getInstance().networkIO().schedule(new Runnable() {
             @Override
             public void run() {
-
                 handler.cancel(true);
             }
         }, NETWORK_TIMEOUT, TimeUnit.MILLISECONDS);
@@ -70,16 +75,17 @@ public class RecipeApiClient {
         if (retrieveRecipeRunnable!=null){
             retrieveRecipeRunnable = null;
         }
+        recipeRequestTimeOut.setValue(false);
         retrieveRecipeRunnable = new RetrieveRecipeRunnable(recipeId);
         final Future handler = AppExecutors.getInstance().networkIO().submit(retrieveRecipeRunnable);
 
         AppExecutors.getInstance().networkIO().schedule(new Runnable() {
             @Override
             public void run() {
-
+                recipeRequestTimeOut.postValue(true);
                 handler.cancel(true);
             }
-        }, NETWORK_TIMEOUT, TimeUnit.MILLISECONDS);
+        }, RECIPE_GET_TIMEOUT , TimeUnit.MILLISECONDS);
     }
 
     private class RetrieveRecipesRunnable implements Runnable {
