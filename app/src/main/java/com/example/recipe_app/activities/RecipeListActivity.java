@@ -2,6 +2,7 @@ package com.example.recipe_app.activities;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,6 +19,8 @@ import com.example.recipe_app.util.Testing;
 import com.example.recipe_app.viewmodel.RecipeListViewModel;
 
 import java.util.List;
+
+import static com.example.recipe_app.activities.RecipeDetailsActivity.EXTRA_RECIPE;
 
 public class RecipeListActivity extends BaseActivity implements RecipeRecyclerViewAdapter.RecipeListener {
 
@@ -102,6 +105,8 @@ public class RecipeListActivity extends BaseActivity implements RecipeRecyclerVi
 
     @Override
     public void onRecipeClickListener(int index) {
-        Log.d(TAG, "onRecipeClickListener: clicked "+index);
+        Intent i = new Intent(this,RecipeDetailsActivity.class);
+        i.putExtra(EXTRA_RECIPE,recyclerViewAdapter.getSelectedRecipe(index));
+        startActivity(i);
     }
 }

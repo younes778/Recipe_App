@@ -122,6 +122,7 @@ public class RecipeRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
             publisher = itemView.findViewById(R.id.recipe_publisher);
             rating = itemView.findViewById(R.id.reciper_rating);
             this.recipeListener = recipeListener;
+            itemView.setOnClickListener(this);
         }
 
         @Override
@@ -131,11 +132,20 @@ public class RecipeRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     public interface RecipeListener {
-        public void onRecipeClickListener(int index);
+        void onRecipeClickListener(int index);
     }
 
     public void setRecipes(List<Recipe> recipes) {
         this.recipes = recipes;
         notifyDataSetChanged();
+    }
+
+    public Recipe getSelectedRecipe(int position){
+        if (recipes!=null){
+            if (recipes.size() >0){
+                return recipes.get(position);
+            }
+        }
+        return null;
     }
 }

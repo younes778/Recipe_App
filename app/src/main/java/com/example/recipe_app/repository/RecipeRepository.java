@@ -28,6 +28,14 @@ public class RecipeRepository {
         return recipeApiClient.getmRecipes();
     }
 
+    public LiveData<Recipe> getRecipe() {
+        return recipeApiClient.getRecipe();
+    }
+
+    public void getRecipeApi(String recipeId) {
+        recipeApiClient.getRecipeApi(recipeId);
+    }
+
     public void searchRecipeApi(String query,int numPage) {
         if (numPage==0){
             numPage=1;
