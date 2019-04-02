@@ -24,4 +24,8 @@ public class RecipeListViewModel extends ViewModel {
     public void searchRecipeApi(String query,int numPage) {
         recipeRepository.searchRecipeApi(query,numPage);
     }
+
+    public void searchNextPage(){
+        recipeRepository.searchNextPage();
+    }
 }

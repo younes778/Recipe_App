@@ -3,10 +3,13 @@ package com.example.recipe_app.activities;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 import com.example.recipe_app.R;
 import com.example.recipe_app.adapters.RecipeRecyclerViewAdapter;
@@ -30,15 +33,21 @@ public class RecipeListActivity extends BaseActivity implements RecipeRecyclerVi
         setContentView(R.layout.activity_recipe_list);
 
         initComponents();
-        subscribeObservers();
     }
 
     private void initComponents() {
         recipeListViewModel = ViewModelProviders.of(this).get(RecipeListViewModel.class);
         recyclerView = findViewById(R.id.recycler_view);
         searchView = findViewById(R.id.search_view);
+
         initRecyclerView();
         initSearchView();
+        subscribeObservers();
+        initSupportActionBar();
+    }
+
+    private void initSupportActionBar(){
+        setSupportActionBar((Toolbar)findViewById(R.id.tool_bar));
     }
 
     private void initSearchView() {
@@ -47,6 +56,8 @@ public class RecipeListActivity extends BaseActivity implements RecipeRecyclerVi
             public boolean onQueryTextSubmit(String s) {
                 recyclerViewAdapter.displayLoading();
                 searchRecipeApi(s, 1);
+                searchView.clearFocus();
+                
                 return false;
             }
 
@@ -62,6 +73,15 @@ public class RecipeListActivity extends BaseActivity implements RecipeRecyclerVi
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (!recyclerView.canScrollVertically(1)){
+                    recipeListViewModel.searchNextPage();
+                }
+            }
+        });
     }
 
     private void subscribeObservers() {
@@ -70,8 +90,8 @@ public class RecipeListActivity extends BaseActivity implements RecipeRecyclerVi
             public void onChanged(@Nullable List<Recipe> recipes) {
                 if (recipes != null) {
                     Testing.printRecipes(TAG, recipes);
-                    recyclerViewAdapter.setRecipes(recipeListViewModel.getRecipes().getValue());
                 }
+                recyclerViewAdapter.setRecipes(recipeListViewModel.getRecipes().getValue());
             }
         });
     }
@@ -82,6 +102,6 @@ public class RecipeListActivity extends BaseActivity implements RecipeRecyclerVi
 
     @Override
     public void onRecipeClickListener(int index) {
-
+        Log.d(TAG, "onRecipeClickListener: clicked "+index);
     }
 }

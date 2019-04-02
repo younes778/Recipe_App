@@ -11,6 +11,8 @@ import java.util.List;
 public class RecipeRepository {
     private static RecipeRepository instance;
     private RecipeApiClient recipeApiClient;
+    private String query;
+    private int pageNumber;
 
     public static RecipeRepository getInstance() {
         if (instance==null)
@@ -30,7 +32,14 @@ public class RecipeRepository {
         if (numPage==0){
             numPage=1;
         }
+        this.query = query;
+        pageNumber = numPage;
         recipeApiClient.searchRecipeApi(query,numPage);
+    }
+
+    public void searchNextPage(){
+        pageNumber++;
+        searchRecipeApi(query,pageNumber);
     }
 
     public void cancelRequest(){

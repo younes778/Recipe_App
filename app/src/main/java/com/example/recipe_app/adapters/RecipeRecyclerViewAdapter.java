@@ -20,6 +20,7 @@ public class RecipeRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
     private static final String TAG = "RecipeRecyclerViewAdapt";
 
     private static final String LOADING = "LOADING...";
+    private static final String EXHAUSTED = "EXHAUSTED...";
     private static final int RECIPE_TYPE = 1;
     private static final int LOADING_TYPE = 2;
 
@@ -73,7 +74,10 @@ public class RecipeRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
     public int getItemViewType(int position) {
         if (recipes.get(position).getTitle().equals(LOADING)) {
             return LOADING_TYPE;
-        } else
+        } else if (position == recipes.size()-1 && position!=0 && !recipes.get(position).getTitle().equals(EXHAUSTED)){
+            return LOADING_TYPE;
+        }
+        else
             return RECIPE_TYPE;
     }
 
@@ -81,16 +85,16 @@ public class RecipeRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
         if (!isLoading()) {
             Recipe recipe = new Recipe();
             recipe.setTitle(LOADING);
-            List<Recipe> recipeList = new ArrayList<>();
-            recipeList.add(recipe);
-            recipes = recipeList;
+            List<Recipe> loadingList = new ArrayList<>();
+            loadingList.add(recipe);
+            recipes = loadingList;
             notifyDataSetChanged();
         }
     }
 
 
     private boolean isLoading() {
-        if (recipes != null && recipes.size() > 0)
+        if (recipes.size() > 0)
             if (recipes.get(recipes.size() - 1).getTitle().equals(LOADING))
                 return true;
         return false;
@@ -98,7 +102,7 @@ public class RecipeRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
 
     @Override
     public int getItemCount() {
-        if (recipes != null)
+        if (recipes!=null)
             return recipes.size();
         return 0;
     }
