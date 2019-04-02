@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Recipe_App</string>
+    <string name="et_hint_search">Recipe ...</string>
 </resources>

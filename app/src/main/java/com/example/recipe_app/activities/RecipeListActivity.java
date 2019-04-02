@@ -6,24 +6,15 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.support.v7.widget.SearchView;
 
 import com.example.recipe_app.R;
 import com.example.recipe_app.adapters.RecipeRecyclerViewAdapter;
 import com.example.recipe_app.model.Recipe;
-import com.example.recipe_app.requests.RecipeApi;
-import com.example.recipe_app.requests.ServiceGenerator;
-import com.example.recipe_app.requests.responses.RecipeSearchResponse;
 import com.example.recipe_app.util.Testing;
-import com.example.recipe_app.util.Utils;
 import com.example.recipe_app.viewmodel.RecipeListViewModel;
 
-import java.io.IOException;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class RecipeListActivity extends BaseActivity implements RecipeRecyclerViewAdapter.RecipeListener {
 
@@ -31,6 +22,7 @@ public class RecipeListActivity extends BaseActivity implements RecipeRecyclerVi
     private RecipeListViewModel recipeListViewModel;
     private RecyclerView recyclerView;
     private RecipeRecyclerViewAdapter recyclerViewAdapter;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,18 +31,33 @@ public class RecipeListActivity extends BaseActivity implements RecipeRecyclerVi
 
         initComponents();
         subscribeObservers();
-
-        testRecipeSearch();
     }
 
     private void initComponents() {
         recipeListViewModel = ViewModelProviders.of(this).get(RecipeListViewModel.class);
         recyclerView = findViewById(R.id.recycler_view);
+        searchView = findViewById(R.id.search_view);
         initRecyclerView();
+        initSearchView();
+    }
+
+    private void initSearchView() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                searchRecipeApi(s, 1);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
     }
 
     private void initRecyclerView() {
-        recyclerViewAdapter = new RecipeRecyclerViewAdapter( this);
+        recyclerViewAdapter = new RecipeRecyclerViewAdapter(this);
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -66,11 +73,6 @@ public class RecipeListActivity extends BaseActivity implements RecipeRecyclerVi
                 }
             }
         });
-    }
-
-    private void testRecipeSearch() {
-        searchRecipeApi("chicken breast", 1);
-
     }
 
     private void searchRecipeApi(String query, int numPage) {
