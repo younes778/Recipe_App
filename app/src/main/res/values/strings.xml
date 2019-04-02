@@ -4,4 +4,5 @@
     <string name="error_recipe_title">Error retrieving recipe...</string>
     <string name="error_recipe_message_default">Error</string>
     <string name="error_recipe_message">Error retrieiving Data ... Please check your network</string>
+    <string name="text_query_exhausted">No more results...</string>
 </resources>

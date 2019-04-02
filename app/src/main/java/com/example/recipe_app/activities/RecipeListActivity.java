@@ -97,6 +97,16 @@ public class RecipeListActivity extends BaseActivity implements RecipeRecyclerVi
                 recyclerViewAdapter.setRecipes(recipeListViewModel.getRecipes().getValue());
             }
         });
+
+        recipeListViewModel.isQueryExhausted().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable Boolean aBoolean) {
+                if (aBoolean){
+                    Log.d(TAG, "onChanged: exhausted ...");
+                    recyclerViewAdapter.displayExhausted();
+                }
+            }
+        });
     }
 
     private void searchRecipeApi(String query, int numPage) {
